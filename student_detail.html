@@ -3,6 +3,97 @@
 
 {% block title %}{{ student['name'] }} - Student Details{% endblock %}
 
+{% block extra_css %}
+<style>
+    .detail-actions {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+    
+    .student-profile {
+        background: white;
+        border-radius: 15px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+        margin-top: 20px;
+    }
+    
+    .profile-header {
+        display: flex;
+        align-items: center;
+        gap: 25px;
+        margin-bottom: 30px;
+        padding-bottom: 20px;
+        border-bottom: 2px solid #f1f5f9;
+    }
+    
+    .profile-avatar {
+        width: 120px;
+        height: 120px;
+        background: linear-gradient(135deg, #667eea, #764ba2);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 48px;
+        color: white;
+    }
+    
+    .profile-info h2 {
+        margin: 0 0 10px 0;
+        color: #2d3748;
+        font-size: 28px;
+    }
+    
+    .profile-info .grade-badge {
+        display: inline-block;
+        padding: 5px 15px;
+        background: #4299e1;
+        color: white;
+        border-radius: 20px;
+        font-size: 14px;
+        font-weight: 500;
+    }
+    
+    .info-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-top: 20px;
+    }
+    
+    .info-card {
+        background: #f8fafc;
+        padding: 20px;
+        border-radius: 10px;
+        border-left: 4px solid #667eea;
+    }
+    
+    .info-card h4 {
+        margin: 0 0 15px 0;
+        color: #4a5568;
+        font-size: 16px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .info-card p {
+        margin: 8px 0;
+        color: #2d3748;
+        font-size: 16px;
+    }
+    
+    .info-label {
+        color: #718096;
+        font-size: 14px;
+        display: block;
+        margin-bottom: 5px;
+    }
+</style>
+{% endblock %}
+
 {% block content %}
 <div class="detail-header">
     <a href="{{ url_for('index') }}" class="btn btn-back">
@@ -12,74 +103,81 @@
         <a href="{{ url_for('edit_student', student_id=student['id']) }}" class="btn btn-warning">
             <i class="fas fa-edit"></i> Edit Student
         </a>
+        <button onclick="window.print()" class="btn btn-info">
+            <i class="fas fa-print"></i> Print Profile
+        </button>
     </div>
 </div>
 
-<div class="student-detail-card">
-    <div class="detail-avatar">
-        <i class="fas fa-user-graduate"></i>
+<div class="student-profile">
+    <div class="profile-header">
+        <div class="profile-avatar">
+            <i class="fas fa-user-graduate"></i>
+        </div>
+        <div class="profile-info">
+            <h2>{{ student['name'] }}</h2>
+            <span class="grade-badge">{{ student['grade'] }}</span>
+            <p style="color: #718096; margin-top: 10px;">
+                <i class="fas fa-id-card"></i> Student ID: {{ student['id'] }}
+            </p>
+        </div>
     </div>
-    
-    <div class="detail-info">
-        <h2>{{ student['name'] }}</h2>
-        <div class="detail-grid">
-            <div class="detail-item">
-                <i class="fas fa-id-card"></i>
-                <div>
-                    <small>Student ID</small>
-                    <p>{{ student['id'] }}</p>
-                </div>
-            </div>
-            <div class="detail-item">
-                <i class="fas fa-user"></i>
-                <div>
-                    <small>Age</small>
-                    <p>{{ student['age'] }} years</p>
-                </div>
-            </div>
-            <div class="detail-item">
-                <i class="fas fa-school"></i>
-                <div>
-                    <small>Grade</small>
-                    <p>{{ student['grade'] }}</p>
-                </div>
-            </div>
-            <div class="detail-item">
-                <i class="fas fa-envelope"></i>
-                <div>
-                    <small>Email</small>
-                    <p>{{ student['email'] }}</p>
-                </div>
-            </div>
-            <div class="detail-item">
-                <i class="fas fa-phone"></i>
-                <div>
-                    <small>Phone</small>
-                    <p>{{ student['phone'] }}</p>
-                </div>
-            </div>
-            <div class="detail-item">
-                <i class="fas fa-calendar-alt"></i>
-                <div>
-                    <small>Created</small>
-                    <p>{{ student['created_at'] }}</p>
-                </div>
-            </div>
+
+    <div class="info-grid">
+        <div class="info-card">
+            <h4><i class="fas fa-user-circle"></i> Personal Information</h4>
+            <p><span class="info-label">Age:</span> {{ student['age'] }} years</p>
+            <p><span class="info-label">Grade:</span> {{ student['grade'] }}</p>
+            <p><span class="info-label">Student ID:</span> {{ student['id'] }}</p>
+        </div>
+
+        <div class="info-card">
+            <h4><i class="fas fa-address-book"></i> Contact Information</h4>
+            <p><span class="info-label">Email:</span> {{ student['email'] }}</p>
+            <p><span class="info-label">Phone:</span> {{ student['phone'] }}</p>
+            {% if student['address'] %}
+            <p><span class="info-label">Address:</span> {{ student['address'] }}</p>
+            {% endif %}
+        </div>
+
+        <div class="info-card">
+            <h4><i class="fas fa-calendar-alt"></i> System Information</h4>
+            <p><span class="info-label">Created:</span> {{ student['created_at'] }}</p>
+            <p><span class="info-label">Last Updated:</span> 
+                {% if student['updated_at'] and student['updated_at'] != student['created_at'] %}
+                    {{ student['updated_at'] }}
+                {% else %}
+                    Never updated
+                {% endif %}
+            </p>
+            <p><span class="info-label">Status:</span> 
+                <span style="color: #38a169; font-weight: 500;">
+                    <i class="fas fa-check-circle"></i> Active
+                </span>
+            </p>
         </div>
     </div>
 </div>
 
-<div class="detail-actions-full">
+<div class="detail-actions-full" style="margin-top: 30px;">
     <a href="{{ url_for('edit_student', student_id=student['id']) }}" class="btn btn-warning">
-        <i class="fas fa-edit"></i> Edit Student
+        <i class="fas fa-edit"></i> Edit Student Information
     </a>
     <a href="{{ url_for('delete_student_route', student_id=student['id']) }}" 
        class="btn btn-danger"
-       onclick="return confirm('Are you sure you want to delete this student?');">
+       onclick="return confirm('Are you sure you want to permanently delete {{ student[\"name\"] }}? This action cannot be undone.');">
         <i class="fas fa-trash"></i> Delete Student
     </a>
     <a href="{{ url_for('index') }}" class="btn btn-secondary">
         <i class="fas fa-home"></i> Return to Dashboard
     </a>
+</div>
+
+<div class="notes-section" style="margin-top: 40px; background: #f8fafc; padding: 20px; border-radius: 10px;">
+    <h4><i class="fas fa-sticky-note"></i> Quick Notes</h4>
+    <p style="color: #718096; font-size: 14px; margin-top: 10px;">
+        <i class="fas fa-info-circle"></i> 
+        Student information is stored securely in the database. You can update contact details as needed.
+    </p>
 </div>
 {% endblock %}
