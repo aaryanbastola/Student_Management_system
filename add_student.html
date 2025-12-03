@@ -1,1 +1,86 @@
-<!-- AddStudentForm -->
+<!-- add_student.html - COMPLETE ADD STUDENT FORM -->
+{% extends "base.html" %}
+
+{% block title %}Add Student - Student Management System{% endblock %}
+
+{% block content %}
+<div class="form-header">
+    <h2><i class="fas fa-user-plus"></i> Add New Student</h2>
+    <a href="{{ url_for('index') }}" class="btn btn-back">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+<div class="form-container">
+    <form method="POST" action="{{ url_for('add_student') }}" class="student-form">
+        <div class="form-group">
+            <label for="name">
+                <i class="fas fa-user"></i> Full Name *
+            </label>
+            <input type="text" id="name" name="name" required 
+                   placeholder="Enter student's full name">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label for="age">
+                    <i class="fas fa-birthday-cake"></i> Age *
+                </label>
+                <input type="number" id="age" name="age" required min="10" max="25"
+                       placeholder="Age">
+            </div>
+
+            <div class="form-group">
+                <label for="grade">
+                    <i class="fas fa-school"></i> Grade *
+                </label>
+                <select id="grade" name="grade" required>
+                    <option value="">Select Grade</option>
+                    <option value="9th Grade">9th Grade</option>
+                    <option value="10th Grade">10th Grade</option>
+                    <option value="11th Grade">11th Grade</option>
+                    <option value="12th Grade">12th Grade</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="email">
+                <i class="fas fa-envelope"></i> Email Address *
+            </label>
+            <input type="email" id="email" name="email" required 
+                   placeholder="student@example.com">
+        </div>
+
+        <div class="form-group">
+            <label for="phone">
+                <i class="fas fa-phone"></i> Phone Number *
+            </label>
+            <input type="tel" id="phone" name="phone" required 
+                   placeholder="555-1234" pattern="[0-9\-]+">
+        </div>
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                <i class="fas fa-save"></i> Add Student
+            </button>
+            <button type="reset" class="btn btn-secondary">
+                <i class="fas fa-redo"></i> Reset Form
+            </button>
+            <a href="{{ url_for('index') }}" class="btn btn-outline">
+                <i class="fas fa-times"></i> Cancel
+            </a>
+        </div>
+    </form>
+
+    <div class="form-help">
+        <h3><i class="fas fa-info-circle"></i> Information</h3>
+        <ul>
+            <li>All fields marked with * are required</li>
+            <li>Age must be between 10 and 25 years</li>
+            <li>Email must be in valid format</li>
+            <li>Phone number should include area code</li>
+        </ul>
+    </div>
+</div>
+{% endblock %}
