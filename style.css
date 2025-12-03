@@ -531,4 +531,122 @@ body {
     border-radius: 24px;
 }
 
-.s
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 16px;
+    width: 16px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    transition: .4s;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: #667eea;
+}
+
+input:checked + .slider:before {
+    transform: translateX(26px);
+}
+
+/* Form Help Cards */
+.form-help, .student-info-card {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.form-help h3, .student-info-card h3 {
+    color: #2d3748;
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.form-help ul {
+    list-style: none;
+}
+
+.form-help li {
+    color: #718096;
+    margin-bottom: 8px;
+    padding-left: 20px;
+    position: relative;
+}
+
+.form-help li:before {
+    content: "•";
+    color: #667eea;
+    position: absolute;
+    left: 0;
+}
+
+.student-info-card .info-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.student-info-card .info-item:last-child {
+    border-bottom: none;
+}
+
+.student-info-card .info-item span {
+    color: #718096;
+}
+
+.student-info-card .info-item strong {
+    color: #2d3748;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 20px;
+        text-align: center;
+    }
+    
+    .navbar {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+    
+    .form-container {
+        grid-template-columns: 1fr;
+    }
+    
+    .form-row {
+        grid-template-columns: 1fr;
+    }
+    
+    .students-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .dashboard-stats {
+        grid-template-columns: 1fr;
+    }
+    
+    .detail-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .student-detail-card {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .form-actions {
+        flex-direction: column;
+    }
+    
+    .detail-actions-full {
+        flex-direction: column;
+    }
+}
