@@ -3,7 +3,7 @@ import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 from db_helper import get_db_connection, init_db, get_all_students, get_student_by_id, add_student, update_student, delete_student
 
-# Configure Flask for flexibility
+# Configure Flask for flexibility 
 app = Flask(__name__, 
             template_folder='templates' if os.path.exists('templates') else '.',
             static_folder='static' if os.path.exists('static') else '.',
