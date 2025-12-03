@@ -1,99 +1,171 @@
-/* light.css - LIGHT THEME STYLES */
-/* This is the default light theme - included for future dark mode toggle capability */
+/* light.css - LIGHT THEME SPECIFIC STYLES */
 
-:root {
+/* Light Theme Variables */
+[data-theme="light"] {
     --primary-color: #667eea;
     --primary-dark: #5a67d8;
     --secondary-color: #764ba2;
-    --text-color: #333;
-    --text-light: #718096;
-    --bg-color: #f7fafc;
-    --card-bg: #ffffff;
-    --border-color: #e2e8f0;
     --success-color: #38a169;
     --error-color: #e53e3e;
     --warning-color: #ed8936;
     --info-color: #4299e1;
+    --text-color: #2d3748;
+    --text-light: #718096;
+    --bg-color: #f7fafc;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
     --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    --shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.2);
+    --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1);
 }
 
-body.light-mode {
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-    color: var(--text-color);
+[data-theme="light"] body {
+    background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
 }
 
-.light-mode .header,
-.light-mode .student-card,
-.light-mode .student-form,
-.light-mode .form-help,
-.light-mode .student-info-card,
-.light-mode .stat-card,
-.light-mode .empty-state,
-.light-mode .student-detail-card,
-.light-mode .dashboard-header {
+[data-theme="light"] .header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+}
+
+[data-theme="light"] .nav-link {
+    color: white;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] .nav-link:hover,
+[data-theme="light"] .nav-link.active {
+    background: rgba(255, 255, 255, 0.25);
+}
+
+[data-theme="light"] .theme-toggle {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+[data-theme="light"] .slider {
+    background-color: rgba(255, 255, 255, 0.3);
+}
+
+[data-theme="light"] input:checked + .slider {
+    background-color: rgba(255, 255, 255, 0.5);
+}
+
+[data-theme="light"] .container {
+    background: white;
+}
+
+[data-theme="light"] .student-card,
+[data-theme="light"] .stat-card,
+[data-theme="light"] .form-section,
+[data-theme="light"] .edit-form,
+[data-theme="light"] .action-card {
     background: var(--card-bg);
     box-shadow: var(--shadow);
 }
 
-.light-mode .nav-link:hover,
-.light-mode .nav-link.active {
-    background: var(--primary-color);
-    color: white;
+[data-theme="light"] .student-card:hover,
+[data-theme="light"] .stat-card:hover {
+    box-shadow: var(--shadow-lg);
 }
 
-.light-mode .btn-primary {
-    background: var(--primary-color);
-}
-
-.light-mode .btn-primary:hover {
-    background: var(--primary-dark);
-}
-
-.light-mode .student-avatar,
-.light-mode .detail-avatar {
-    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-}
-
-.light-mode .detail-item i {
-    color: var(--primary-color);
-}
-
-.light-mode .flash-success {
-    background: #c6f6d5;
-    color: #22543d;
-    border-left-color: var(--success-color);
-}
-
-.light-mode .flash-error {
-    background: #fed7d7;
-    color: #742a2a;
-    border-left-color: var(--error-color);
-}
-
-.light-mode .stat-card i {
-    color: var(--primary-color);
-}
-
-.light-mode .footer {
-    color: white;
-}
-
-.light-mode .form-group input,
-.light-mode .form-group select {
+[data-theme="light"] .form-group input,
+[data-theme="light"] .form-group select,
+[data-theme="light"] .form-group textarea {
+    background: white;
     border-color: var(--border-color);
+    color: var(--text-color);
 }
 
-.light-mode .form-group input:focus,
-.light-mode .form-group select:focus {
+[data-theme="light"] .form-group input:focus,
+[data-theme="light"] .form-group select:focus,
+[data-theme="light"] .form-group textarea:focus {
     border-color: var(--primary-color);
     box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
 }
 
-.light-mode .detail-item {
-    background: var(--bg-color);
+[data-theme="light"] .empty-state {
+    background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+    border-color: var(--border-color);
 }
 
-.light-mode .student-info-card .info-item {
-    border-bottom-color: var(--border-color);
+[data-theme="light"] .footer {
+    background: linear-gradient(135deg, #2d3748, #1a202c);
+    color: white;
+}
+
+[data-theme="light"] .history-log {
+    background: #f8fafc;
+}
+
+[data-theme="light"] .notes-section {
+    background: #f8fafc;
+}
+
+[data-theme="light"] .form-help {
+    background: linear-gradient(135deg, #f6f9ff, #f0f4ff);
+}
+
+/* Light theme specific button styles */
+[data-theme="light"] .btn-outline {
+    border-color: var(--primary-color);
+    color: var(--primary-color);
+}
+
+[data-theme="light"] .btn-outline:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+/* Light theme flash messages */
+[data-theme="light"] .flash-success {
+    background: #f0fff4;
+    color: #22543d;
+    border-left-color: var(--success-color);
+}
+
+[data-theme="light"] .flash-error {
+    background: #fff5f5;
+    color: #742a2a;
+    border-left-color: var(--error-color);
+}
+
+[data-theme="light"] .flash-warning {
+    background: #fffaf0;
+    color: #744210;
+    border-left-color: var(--warning-color);
+}
+
+[data-theme="light"] .flash-info {
+    background: #ebf8ff;
+    color: #2c5282;
+    border-left-color: var(--info-color);
+}
+
+/* Light theme form validation */
+[data-theme="light"] .error {
+    border-color: var(--error-color) !important;
+}
+
+[data-theme="light"] .error-message {
+    color: var(--error-color);
+}
+
+[data-theme="light"] .required {
+    color: var(--error-color);
+}
+
+/* Light theme student badges */
+[data-theme="light"] .grade-12 {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+}
+
+[data-theme="light"] .grade-11 {
+    background: linear-gradient(135deg, #4299e1, #3182ce);
+}
+
+[data-theme="light"] .grade-10 {
+    background: linear-gradient(135deg, #ed8936, #dd6b20);
+}
+
+[data-theme="light"] .grade-9 {
+    background: linear-gradient(135deg, #48bb78, #38a169);
 }
