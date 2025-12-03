@@ -1,1 +1,99 @@
-/* LightModeStyle */
+/* light.css - LIGHT THEME STYLES */
+/* This is the default light theme - included for future dark mode toggle capability */
+
+:root {
+    --primary-color: #667eea;
+    --primary-dark: #5a67d8;
+    --secondary-color: #764ba2;
+    --text-color: #333;
+    --text-light: #718096;
+    --bg-color: #f7fafc;
+    --card-bg: #ffffff;
+    --border-color: #e2e8f0;
+    --success-color: #38a169;
+    --error-color: #e53e3e;
+    --warning-color: #ed8936;
+    --info-color: #4299e1;
+    --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --shadow-hover: 0 8px 15px rgba(0, 0, 0, 0.2);
+}
+
+body.light-mode {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: var(--text-color);
+}
+
+.light-mode .header,
+.light-mode .student-card,
+.light-mode .student-form,
+.light-mode .form-help,
+.light-mode .student-info-card,
+.light-mode .stat-card,
+.light-mode .empty-state,
+.light-mode .student-detail-card,
+.light-mode .dashboard-header {
+    background: var(--card-bg);
+    box-shadow: var(--shadow);
+}
+
+.light-mode .nav-link:hover,
+.light-mode .nav-link.active {
+    background: var(--primary-color);
+    color: white;
+}
+
+.light-mode .btn-primary {
+    background: var(--primary-color);
+}
+
+.light-mode .btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+.light-mode .student-avatar,
+.light-mode .detail-avatar {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+
+.light-mode .detail-item i {
+    color: var(--primary-color);
+}
+
+.light-mode .flash-success {
+    background: #c6f6d5;
+    color: #22543d;
+    border-left-color: var(--success-color);
+}
+
+.light-mode .flash-error {
+    background: #fed7d7;
+    color: #742a2a;
+    border-left-color: var(--error-color);
+}
+
+.light-mode .stat-card i {
+    color: var(--primary-color);
+}
+
+.light-mode .footer {
+    color: white;
+}
+
+.light-mode .form-group input,
+.light-mode .form-group select {
+    border-color: var(--border-color);
+}
+
+.light-mode .form-group input:focus,
+.light-mode .form-group select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.light-mode .detail-item {
+    background: var(--bg-color);
+}
+
+.light-mode .student-info-card .info-item {
+    border-bottom-color: var(--border-color);
+}
