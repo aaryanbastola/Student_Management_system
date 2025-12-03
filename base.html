@@ -1,20 +1,19 @@
-<!-- base.html - COMPLETE BASE TEMPLATE -->
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Student Management System{% endblock %}</title>
     
-    <!-- CSS Files (works in both local and deployed) -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') if url_for('static', filename='.') != '/static/' else '/style.css' }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='light.css') if url_for('static', filename='.') != '/static/' else '/light.css' }}">
+    <!-- SIMPLE CSS LINKS THAT WORK EVERYWHERE -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="light.css">
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
     
     {% block extra_css %}{% endblock %}
 </head>
@@ -31,10 +30,10 @@
             </div>
             
             <nav class="navbar">
-                <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
+                <a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">
                     <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
-                <a href="{{ url_for('add_student') }}" class="nav-link {% if request.endpoint == 'add_student' %}active{% endif %}">
+                <a href="/add" class="nav-link {% if request.path == '/add' %}active{% endif %}">
                     <i class="fas fa-user-plus"></i> Add Student
                 </a>
                 <div class="theme-toggle">
@@ -77,7 +76,9 @@
 
         <!-- Main Content -->
         <main class="main-content">
-            {% block content %}{% endblock %}
+            {% block content %}
+            <!-- Content from child templates goes here -->
+            {% endblock %}
         </main>
 
         <!-- Footer -->
@@ -87,7 +88,7 @@
                 <div class="footer-stats">
                     <span class="stat">
                         <i class="fas fa-users"></i>
-                        <span id="totalStudents">Loading...</span> Students
+                        <span id="totalStudents">0</span> Students
                     </span>
                     <span class="stat">
                         <i class="fas fa-code"></i>
@@ -98,8 +99,8 @@
         </footer>
     </div>
 
-    <!-- JavaScript Files (works in both local and deployed) -->
-    <script src="{{ url_for('static', filename='script.js') if url_for('static', filename='.') != '/static/' else '/script.js' }}"></script>
+    <!-- SIMPLE JS LINK THAT WORKS EVERYWHERE -->
+    <script src="script.js"></script>
     
     {% block extra_js %}{% endblock %}
     
@@ -109,7 +110,19 @@
             // Load saved theme
             const savedTheme = localStorage.getItem('theme') || 'light';
             document.documentElement.setAttribute('data-theme', savedTheme);
-            document.getElementById('themeToggle').checked = savedTheme === 'dark';
+            
+            // Set toggle checkbox
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) {
+                themeToggle.checked = savedTheme === 'dark';
+                
+                // Add event listener for theme toggle
+                themeToggle.addEventListener('change', function() {
+                    const newTheme = this.checked ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                });
+            }
             
             // Update student count
             const studentCards = document.querySelectorAll('.student-card');
