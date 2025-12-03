@@ -1,21 +1,22 @@
-<!-- base.html - MODIFIED FOR GITHUB ROOT DIRECTORY -->
+<!-- base.html - COMPLETE BASE TEMPLATE -->
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Student Management System{% endblock %}</title>
     
-    <!-- MODIFIED: Direct paths for GitHub root directory -->
-    <link rel="stylesheet" href="/style.css">
-    <link rel="stylesheet" href="/light.css">
+    <!-- CSS Files (works in both local and deployed) -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') if url_for('static', filename='.') != '/static/' else '/style.css' }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='light.css') if url_for('static', filename='.') != '/static/' else '/light.css' }}">
+    
+    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Fallback for local development -->
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" 
-          onerror="this.href='/style.css'; this.onerror=null;">
-    <link rel="stylesheet" href="{{ url_for('static', filename='light.css') }}" 
-          onerror="this.href='/light.css'; this.onerror=null;">
+    <!-- Favicon -->
+    <link rel="icon" type="image/x-icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
+    
+    {% block extra_css %}{% endblock %}
 </head>
 <body>
     <div class="container">
@@ -23,11 +24,15 @@
         <header class="header">
             <div class="logo">
                 <i class="fas fa-graduation-cap"></i>
-                <h1>Student Management System</h1>
+                <div>
+                    <h1>Student Management System</h1>
+                    <p class="tagline">Manage students efficiently</p>
+                </div>
             </div>
+            
             <nav class="navbar">
                 <a href="{{ url_for('index') }}" class="nav-link {% if request.endpoint == 'index' %}active{% endif %}">
-                    <i class="fas fa-home"></i> Dashboard
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
                 </a>
                 <a href="{{ url_for('add_student') }}" class="nav-link {% if request.endpoint == 'add_student' %}active{% endif %}">
                     <i class="fas fa-user-plus"></i> Add Student
@@ -54,11 +59,13 @@
                                     <i class="fas fa-check-circle"></i>
                                 {% elif category == 'error' %}
                                     <i class="fas fa-exclamation-circle"></i>
+                                {% elif category == 'warning' %}
+                                    <i class="fas fa-exclamation-triangle"></i>
                                 {% else %}
                                     <i class="fas fa-info-circle"></i>
                                 {% endif %}
                             </span>
-                            {{ message }}
+                            <span class="flash-text">{{ message }}</span>
                             <button class="flash-close" onclick="this.parentElement.remove()">
                                 <i class="fas fa-times"></i>
                             </button>
@@ -75,20 +82,41 @@
 
         <!-- Footer -->
         <footer class="footer">
-            <p>&copy; 2024 Student Management System. All rights reserved.</p>
-            <p class="footer-stats">
-                <i class="fas fa-users"></i> 
-                Total Students: 
-                <span id="totalStudents">{% block total_students %}0{% endblock %}</span>
-            </p>
+            <div class="footer-content">
+                <p>&copy; 2024 Student Management System. All rights reserved.</p>
+                <div class="footer-stats">
+                    <span class="stat">
+                        <i class="fas fa-users"></i>
+                        <span id="totalStudents">Loading...</span> Students
+                    </span>
+                    <span class="stat">
+                        <i class="fas fa-code"></i>
+                        Built with Flask & SQLite
+                    </span>
+                </div>
+            </div>
         </footer>
     </div>
 
-    <!-- MODIFIED: Direct path for GitHub root directory -->
-    <script src="/script.js"></script>
+    <!-- JavaScript Files (works in both local and deployed) -->
+    <script src="{{ url_for('static', filename='script.js') if url_for('static', filename='.') != '/static/' else '/script.js' }}"></script>
     
-    <!-- Fallback for local development -->
-    <script src="{{ url_for('static', filename='script.js') }}"
-            onerror="this.src='/script.js'; this.onerror=null;"></script>
+    {% block extra_js %}{% endblock %}
+    
+    <!-- Initialize theme on page load -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Load saved theme
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            document.getElementById('themeToggle').checked = savedTheme === 'dark';
+            
+            // Update student count
+            const studentCards = document.querySelectorAll('.student-card');
+            if (studentCards.length > 0) {
+                document.getElementById('totalStudents').textContent = studentCards.length;
+            }
+        });
+    </script>
 </body>
 </html>
