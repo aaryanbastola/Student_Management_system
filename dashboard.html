@@ -1,229 +1,801 @@
-<!-- dashboard.html - COMPLETE DASHBOARD -->
-{% extends "base.html" %}
-
-{% block title %}Dashboard - Student Management System{% endblock %}
-
-{% block extra_css %}
-<style>
-    .search-container {
-        background: white;
-        padding: 20px;
-        border-radius: 15px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        margin-bottom: 25px;
-    }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Student Management System</title>
     
-    .search-form {
-        display: flex;
-        gap: 10px;
-        max-width: 500px;
-    }
+    <!-- CSS Files -->
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="light.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    .search-input {
-        flex: 1;
-        padding: 12px 20px;
-        border: 2px solid #e2e8f0;
-        border-radius: 8px;
-        font-size: 16px;
-    }
+    <!-- Favicon -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🎓</text></svg>">
     
-    .search-button {
-        padding: 12px 24px;
-        background: #667eea;
-        color: white;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        font-weight: 500;
-    }
-</style>
-{% endblock %}
-
-{% block content %}
-<div class="dashboard-header">
-    <div>
-        <h2><i class="fas fa-tachometer-alt"></i> Student Dashboard</h2>
-        <p class="subtitle">Manage all your students in one place</p>
-    </div>
-    <a href="{{ url_for('add_student') }}" class="btn btn-primary">
-        <i class="fas fa-user-plus"></i> Add New Student
-    </a>
-</div>
-
-<!-- Search Box -->
-<div class="search-container">
-    <form method="GET" action="/search" class="search-form" onsubmit="return searchStudents()">
-        <input type="text" 
-               id="searchInput" 
-               class="search-input" 
-               placeholder="Search students by name, email, grade, or phone..."
-               onkeyup="if(event.key === 'Enter') searchStudents()">
-        <button type="button" onclick="searchStudents()" class="search-button">
-            <i class="fas fa-search"></i> Search
-        </button>
-    </form>
-</div>
-
-<!-- Quick Stats -->
-<div class="dashboard-stats">
-    <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
-            <i class="fas fa-users"></i>
-        </div>
-        <h3>Total Students</h3>
-        <p class="stat-number">{{ students|length }}</p>
-    </div>
-    
-    <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #4299e1, #3182ce);">
-            <i class="fas fa-user-graduate"></i>
-        </div>
-        <h3>12th Grade</h3>
-        <p class="stat-number">{{ students|selectattr('grade', 'equalto', '12th Grade')|list|length }}</p>
-    </div>
-    
-    <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #ed8936, #dd6b20);">
-            <i class="fas fa-chart-line"></i>
-        </div>
-        <h3>Average Age</h3>
-        <p class="stat-number">
-            {% set ages = students|map(attribute='age')|list %}
-            {% if ages %}
-                {{ (ages|sum / ages|length)|round(1) }}
-            {% else %}
-                0
-            {% endif %}
-        </p>
-    </div>
-</div>
-
-<!-- Students Grid -->
-{% if students %}
-<div class="students-grid">
-    {% for student in students %}
-    <div class="student-card">
-        <div class="student-header">
-            <div class="student-avatar" style="background: linear-gradient(135deg, 
-                {% if student['grade'] == '12th Grade' %}#667eea
-                {% elif student['grade'] == '11th Grade' %}#4299e1
-                {% elif student['grade'] == '10th Grade' %}#ed8936
-                {% else %}#48bb78{% endif %}, 
-                {% if student['grade'] == '12th Grade' %}#764ba2
-                {% elif student['grade'] == '11th Grade' %}#3182ce
-                {% elif student['grade'] == '10th Grade' %}#dd6b20
-                {% else %}#38a169{% endif %});">
-                <i class="fas fa-user-graduate"></i>
-            </div>
-            <div class="student-badge grade-{{ student['grade'][:2] }}">
-                {{ student['grade'] }}
-            </div>
-        </div>
-        
-        <div class="student-info">
-            <h3>{{ student['name'] }}</h3>
-            <div class="student-details">
-                <p><i class="fas fa-user"></i> <strong>Age:</strong> {{ student['age'] }}</p>
-                <p><i class="fas fa-envelope"></i> {{ student['email'] }}</p>
-                <p><i class="fas fa-phone"></i> {{ student['phone'] }}</p>
-                <p><i class="fas fa-calendar"></i> Joined: {{ student['created_at'][:10] }}</p>
-            </div>
-        </div>
-        
-        <div class="student-actions">
-            <a href="{{ url_for('student_detail', student_id=student['id']) }}" 
-               class="btn btn-sm btn-info" title="View Details">
-                <i class="fas fa-eye"></i> View
-            </a>
-            <a href="{{ url_for('edit_student', student_id=student['id']) }}" 
-               class="btn btn-sm btn-warning" title="Edit Student">
-                <i class="fas fa-edit"></i> Edit
-            </a>
-            <a href="{{ url_for('delete_student_route', student_id=student['id']) }}" 
-               class="btn btn-sm btn-danger" title="Delete Student"
-               onclick="return confirm('Are you sure you want to delete {{ student['name'] }}? This action cannot be undone.');">
-                <i class="fas fa-trash"></i> Delete
-            </a>
-        </div>
-    </div>
-    {% endfor %}
-</div>
-{% else %}
-<div class="empty-state">
-    <div class="empty-icon">
-        <i class="fas fa-users-slash"></i>
-    </div>
-    <h3>No Students Found</h3>
-    <p>Get started by adding your first student to the system.</p>
-    <a href="{{ url_for('add_student') }}" class="btn btn-primary">
-        <i class="fas fa-user-plus"></i> Add First Student
-    </a>
-</div>
-{% endif %}
-
-<!-- Export Options -->
-{% if students %}
-<div class="export-options">
-    <h3><i class="fas fa-download"></i> Export Data</h3>
-    <div class="export-buttons">
-        <button class="btn btn-outline" onclick="exportToCSV()">
-            <i class="fas fa-file-csv"></i> Export as CSV
-        </button>
-        <button class="btn btn-outline" onclick="window.print()">
-            <i class="fas fa-print"></i> Print List
-        </button>
-    </div>
-</div>
-{% endif %}
-{% endblock %}
-
-{% block extra_js %}
-<script>
-function searchStudents() {
-    const query = document.getElementById('searchInput').value.trim();
-    if (!query) {
-        alert('Please enter a search term');
-        return false;
-    }
-    
-    // Simple client-side search for demo
-    // In production, this would make an AJAX call to server
-    const cards = document.querySelectorAll('.student-card');
-    let found = false;
-    
-    cards.forEach(card => {
-        const text = card.textContent.toLowerCase();
-        if (text.includes(query.toLowerCase())) {
-            card.style.display = 'block';
-            card.style.animation = 'highlight 1s';
-            found = true;
-        } else {
-            card.style.display = 'none';
+    <style>
+        /* Additional CSS for dashboard */
+        .search-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
         }
-    });
-    
-    if (!found && cards.length > 0) {
-        alert('No students found matching your search.');
-        cards.forEach(card => card.style.display = 'block');
-    }
-    
-    return false;
-}
+        
+        .search-form {
+            display: flex;
+            gap: 10px;
+            max-width: 500px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 10px 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        
+        .search-button {
+            padding: 10px 20px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+        }
+        
+        .search-button:hover {
+            background: #5a67d8;
+        }
+        
+        .export-options {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 40px;
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .grade-badge {
+            padding: 6px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .grade-12 { background: linear-gradient(135deg, #667eea, #764ba2); }
+        .grade-11 { background: linear-gradient(135deg, #4299e1, #3182ce); }
+        .grade-10 { background: linear-gradient(135deg, #ed8936, #dd6b20); }
+        .grade-9 { background: linear-gradient(135deg, #48bb78, #38a169); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-graduation-cap"></i>
+                <div>
+                    <h1>Student Management System</h1>
+                    <p class="tagline">Manage students efficiently</p>
+                </div>
+            </div>
+            
+            <nav class="navbar">
+                <a href="/" class="nav-link active">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </a>
+                <a href="/add" class="nav-link">
+                    <i class="fas fa-user-plus"></i> Add Student
+                </a>
+                <div class="theme-toggle">
+                    <i class="fas fa-sun"></i>
+                    <label class="switch">
+                        <input type="checkbox" id="themeToggle">
+                        <span class="slider"></span>
+                    </label>
+                    <i class="fas fa-moon"></i>
+                </div>
+            </nav>
+        </header>
 
-function exportToCSV() {
-    // This is a simplified version
-    alert('CSV export would be implemented in a production system');
-    // In production, you would make an AJAX call to generate and download CSV
-}
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Dashboard Header -->
+            <div class="dashboard-header">
+                <div>
+                    <h2><i class="fas fa-tachometer-alt"></i> Student Dashboard</h2>
+                    <p class="subtitle">Manage all your students in one place</p>
+                </div>
+                <a href="/add" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Add New Student
+                </a>
+            </div>
 
-// Add highlight animation
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes highlight {
-        0% { background-color: #fffacd; }
-        100% { background-color: white; }
-    }
-`;
-document.head.appendChild(style);
-</script>
-{% endblock %}
+            <!-- Search Box -->
+            <div class="search-container">
+                <div class="search-form">
+                    <input type="text" id="searchInput" class="search-input" 
+                           placeholder="Search students by name, email, or grade...">
+                    <button type="button" onclick="searchStudents()" class="search-button">
+                        <i class="fas fa-search"></i> Search
+                    </button>
+                    <button type="button" onclick="clearSearch()" class="btn btn-outline" style="padding: 10px 20px;">
+                        <i class="fas fa-times"></i> Clear
+                    </button>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="dashboard-stats">
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <h3>Total Students</h3>
+                    <p class="stat-number" id="totalCount">8</p>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #4299e1, #3182ce);">
+                        <i class="fas fa-user-graduate"></i>
+                    </div>
+                    <h3>12th Grade</h3>
+                    <p class="stat-number" id="grade12Count">3</p>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon" style="background: linear-gradient(135deg, #ed8936, #dd6b20);">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Average Age</h3>
+                    <p class="stat-number" id="avgAge">17.1</p>
+                </div>
+            </div>
+
+            <!-- Students Grid -->
+            <div class="students-grid" id="studentsGrid">
+                <!-- Student Card 1 -->
+                <div class="student-card" data-name="John Smith" data-grade="12th Grade" data-age="18" data-email="john.smith@example.com">
+                    <div class="student-header">
+                        <div class="student-avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <span class="grade-badge grade-12">12th Grade</span>
+                    </div>
+                    
+                    <div class="student-info">
+                        <h3>John Smith</h3>
+                        <div class="student-details">
+                            <p><i class="fas fa-user"></i> <strong>Age:</strong> 18</p>
+                            <p><i class="fas fa-envelope"></i> john.smith@example.com</p>
+                            <p><i class="fas fa-phone"></i> 555-0101</p>
+                            <p><i class="fas fa-calendar"></i> Joined: 2024-01-15</p>
+                        </div>
+                    </div>
+                    
+                    <div class="student-actions">
+                        <a href="/student/1" class="btn btn-sm btn-info" title="View Details">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="/edit/1" class="btn btn-sm btn-warning" title="Edit Student">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <button class="btn btn-sm btn-danger" title="Delete Student" onclick="deleteStudent(1, 'John Smith')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Student Card 2 -->
+                <div class="student-card" data-name="Emma Johnson" data-grade="11th Grade" data-age="17" data-email="emma.johnson@example.com">
+                    <div class="student-header">
+                        <div class="student-avatar" style="background: linear-gradient(135deg, #4299e1, #3182ce);">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <span class="grade-badge grade-11">11th Grade</span>
+                    </div>
+                    
+                    <div class="student-info">
+                        <h3>Emma Johnson</h3>
+                        <div class="student-details">
+                            <p><i class="fas fa-user"></i> <strong>Age:</strong> 17</p>
+                            <p><i class="fas fa-envelope"></i> emma.johnson@example.com</p>
+                            <p><i class="fas fa-phone"></i> 555-0102</p>
+                            <p><i class="fas fa-calendar"></i> Joined: 2024-01-16</p>
+                        </div>
+                    </div>
+                    
+                    <div class="student-actions">
+                        <a href="/student/2" class="btn btn-sm btn-info" title="View Details">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="/edit/2" class="btn btn-sm btn-warning" title="Edit Student">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <button class="btn btn-sm btn-danger" title="Delete Student" onclick="deleteStudent(2, 'Emma Johnson')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Student Card 3 -->
+                <div class="student-card" data-name="Michael Brown" data-grade="10th Grade" data-age="16" data-email="michael.brown@example.com">
+                    <div class="student-header">
+                        <div class="student-avatar" style="background: linear-gradient(135deg, #ed8936, #dd6b20);">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <span class="grade-badge grade-10">10th Grade</span>
+                    </div>
+                    
+                    <div class="student-info">
+                        <h3>Michael Brown</h3>
+                        <div class="student-details">
+                            <p><i class="fas fa-user"></i> <strong>Age:</strong> 16</p>
+                            <p><i class="fas fa-envelope"></i> michael.brown@example.com</p>
+                            <p><i class="fas fa-phone"></i> 555-0103</p>
+                            <p><i class="fas fa-calendar"></i> Joined: 2024-01-17</p>
+                        </div>
+                    </div>
+                    
+                    <div class="student-actions">
+                        <a href="/student/3" class="btn btn-sm btn-info" title="View Details">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="/edit/3" class="btn btn-sm btn-warning" title="Edit Student">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <button class="btn btn-sm btn-danger" title="Delete Student" onclick="deleteStudent(3, 'Michael Brown')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Student Card 4 -->
+                <div class="student-card" data-name="Sarah Davis" data-grade="12th Grade" data-age="18" data-email="sarah.davis@example.com">
+                    <div class="student-header">
+                        <div class="student-avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <span class="grade-badge grade-12">12th Grade</span>
+                    </div>
+                    
+                    <div class="student-info">
+                        <h3>Sarah Davis</h3>
+                        <div class="student-details">
+                            <p><i class="fas fa-user"></i> <strong>Age:</strong> 18</p>
+                            <p><i class="fas fa-envelope"></i> sarah.davis@example.com</p>
+                            <p><i class="fas fa-phone"></i> 555-0104</p>
+                            <p><i class="fas fa-calendar"></i> Joined: 2024-01-18</p>
+                        </div>
+                    </div>
+                    
+                    <div class="student-actions">
+                        <a href="/student/4" class="btn btn-sm btn-info" title="View Details">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="/edit/4" class="btn btn-sm btn-warning" title="Edit Student">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <button class="btn btn-sm btn-danger" title="Delete Student" onclick="deleteStudent(4, 'Sarah Davis')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Student Card 5 -->
+                <div class="student-card" data-name="David Wilson" data-grade="11th Grade" data-age="17" data-email="david.wilson@example.com">
+                    <div class="student-header">
+                        <div class="student-avatar" style="background: linear-gradient(135deg, #4299e1, #3182ce);">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <span class="grade-badge grade-11">11th Grade</span>
+                    </div>
+                    
+                    <div class="student-info">
+                        <h3>David Wilson</h3>
+                        <div class="student-details">
+                            <p><i class="fas fa-user"></i> <strong>Age:</strong> 17</p>
+                            <p><i class="fas fa-envelope"></i> david.wilson@example.com</p>
+                            <p><i class="fas fa-phone"></i> 555-0105</p>
+                            <p><i class="fas fa-calendar"></i> Joined: 2024-01-19</p>
+                        </div>
+                    </div>
+                    
+                    <div class="student-actions">
+                        <a href="/student/5" class="btn btn-sm btn-info" title="View Details">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="/edit/5" class="btn btn-sm btn-warning" title="Edit Student">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <button class="btn btn-sm btn-danger" title="Delete Student" onclick="deleteStudent(5, 'David Wilson')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Student Card 6 -->
+                <div class="student-card" data-name="Lisa Anderson" data-grade="10th Grade" data-age="16" data-email="lisa.anderson@example.com">
+                    <div class="student-header">
+                        <div class="student-avatar" style="background: linear-gradient(135deg, #ed8936, #dd6b20);">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <span class="grade-badge grade-10">10th Grade</span>
+                    </div>
+                    
+                    <div class="student-info">
+                        <h3>Lisa Anderson</h3>
+                        <div class="student-details">
+                            <p><i class="fas fa-user"></i> <strong>Age:</strong> 16</p>
+                            <p><i class="fas fa-envelope"></i> lisa.anderson@example.com</p>
+                            <p><i class="fas fa-phone"></i> 555-0106</p>
+                            <p><i class="fas fa-calendar"></i> Joined: 2024-01-20</p>
+                        </div>
+                    </div>
+                    
+                    <div class="student-actions">
+                        <a href="/student/6" class="btn btn-sm btn-info" title="View Details">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="/edit/6" class="btn btn-sm btn-warning" title="Edit Student">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <button class="btn btn-sm btn-danger" title="Delete Student" onclick="deleteStudent(6, 'Lisa Anderson')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Student Card 7 -->
+                <div class="student-card" data-name="Robert Taylor" data-grade="12th Grade" data-age="18" data-email="robert.taylor@example.com">
+                    <div class="student-header">
+                        <div class="student-avatar" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <span class="grade-badge grade-12">12th Grade</span>
+                    </div>
+                    
+                    <div class="student-info">
+                        <h3>Robert Taylor</h3>
+                        <div class="student-details">
+                            <p><i class="fas fa-user"></i> <strong>Age:</strong> 18</p>
+                            <p><i class="fas fa-envelope"></i> robert.taylor@example.com</p>
+                            <p><i class="fas fa-phone"></i> 555-0107</p>
+                            <p><i class="fas fa-calendar"></i> Joined: 2024-01-21</p>
+                        </div>
+                    </div>
+                    
+                    <div class="student-actions">
+                        <a href="/student/7" class="btn btn-sm btn-info" title="View Details">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="/edit/7" class="btn btn-sm btn-warning" title="Edit Student">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <button class="btn btn-sm btn-danger" title="Delete Student" onclick="deleteStudent(7, 'Robert Taylor')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Student Card 8 -->
+                <div class="student-card" data-name="Maria Thomas" data-grade="11th Grade" data-age="17" data-email="maria.thomas@example.com">
+                    <div class="student-header">
+                        <div class="student-avatar" style="background: linear-gradient(135deg, #4299e1, #3182ce);">
+                            <i class="fas fa-user-graduate"></i>
+                        </div>
+                        <span class="grade-badge grade-11">11th Grade</span>
+                    </div>
+                    
+                    <div class="student-info">
+                        <h3>Maria Thomas</h3>
+                        <div class="student-details">
+                            <p><i class="fas fa-user"></i> <strong>Age:</strong> 17</p>
+                            <p><i class="fas fa-envelope"></i> maria.thomas@example.com</p>
+                            <p><i class="fas fa-phone"></i> 555-0108</p>
+                            <p><i class="fas fa-calendar"></i> Joined: 2024-01-22</p>
+                        </div>
+                    </div>
+                    
+                    <div class="student-actions">
+                        <a href="/student/8" class="btn btn-sm btn-info" title="View Details">
+                            <i class="fas fa-eye"></i> View
+                        </a>
+                        <a href="/edit/8" class="btn btn-sm btn-warning" title="Edit Student">
+                            <i class="fas fa-edit"></i> Edit
+                        </a>
+                        <button class="btn btn-sm btn-danger" title="Delete Student" onclick="deleteStudent(8, 'Maria Thomas')">
+                            <i class="fas fa-trash"></i> Delete
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Options -->
+            <div class="export-options">
+                <h3><i class="fas fa-download"></i> Export Data</h3>
+                <div class="export-buttons">
+                    <button class="btn btn-outline" onclick="exportToCSV()">
+                        <i class="fas fa-file-csv"></i> Export as CSV
+                    </button>
+                    <button class="btn btn-outline" onclick="window.print()">
+                        <i class="fas fa-print"></i> Print List
+                    </button>
+                    <button class="btn btn-outline" onclick="refreshData()">
+                        <i class="fas fa-sync-alt"></i> Refresh
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Footer -->
+        <footer class="footer">
+            <div class="footer-content">
+                <p>&copy; 2024 Student Management System. All rights reserved.</p>
+                <div class="footer-stats">
+                    <span class="stat">
+                        <i class="fas fa-users"></i>
+                        <span id="footerStudentCount">8</span> Students
+                    </span>
+                    <span class="stat">
+                        <i class="fas fa-code"></i>
+                        Built with Flask & SQLite
+                    </span>
+                </div>
+            </div>
+        </footer>
+    </div>
+
+    <!-- JavaScript Code - DIRECTLY IN THE HTML FILE -->
+    <script>
+        // ===== MAIN JAVASCRIPT CODE =====
+        
+        // Wait for DOM to load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Student Management System Dashboard loaded');
+            
+            // Initialize theme
+            initTheme();
+            
+            // Update statistics
+            updateStatistics();
+            
+            // Add event listeners
+            initEventListeners();
+            
+            // Animate cards on load
+            animateCards();
+        });
+        
+        // ===== THEME FUNCTIONALITY =====
+        function initTheme() {
+            const savedTheme = localStorage.getItem('theme') || 'light';
+            document.documentElement.setAttribute('data-theme', savedTheme);
+            
+            const themeToggle = document.getElementById('themeToggle');
+            if (themeToggle) {
+                themeToggle.checked = savedTheme === 'dark';
+                
+                themeToggle.addEventListener('change', function() {
+                    const newTheme = this.checked ? 'dark' : 'light';
+                    document.documentElement.setAttribute('data-theme', newTheme);
+                    localStorage.setItem('theme', newTheme);
+                    
+                    // Show theme change notification
+                    showNotification(`Theme changed to ${newTheme} mode`, 'success');
+                });
+            }
+        }
+        
+        // ===== SEARCH FUNCTIONALITY =====
+        function searchStudents() {
+            const searchInput = document.getElementById('searchInput');
+            const query = searchInput.value.trim().toLowerCase();
+            
+            if (!query) {
+                showNotification('Please enter a search term', 'warning');
+                return;
+            }
+            
+            const studentCards = document.querySelectorAll('.student-card');
+            let foundCount = 0;
+            
+            studentCards.forEach(card => {
+                const name = card.getAttribute('data-name').toLowerCase();
+                const email = card.getAttribute('data-email').toLowerCase();
+                const grade = card.getAttribute('data-grade').toLowerCase();
+                
+                if (name.includes(query) || email.includes(query) || grade.includes(query)) {
+                    card.style.display = 'block';
+                    card.style.animation = 'highlight 0.5s';
+                    foundCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            // Update search results message
+            const message = foundCount > 0 
+                ? `Found ${foundCount} student(s) matching "${query}"`
+                : `No students found matching "${query}"`;
+            
+            showNotification(message, foundCount > 0 ? 'success' : 'warning');
+            
+            // Add highlight animation CSS
+            if (!document.getElementById('highlightStyle')) {
+                const style = document.createElement('style');
+                style.id = 'highlightStyle';
+                style.textContent = `
+                    @keyframes highlight {
+                        0% { background-color: #fffacd; }
+                        100% { background-color: var(--card-bg, white); }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        function clearSearch() {
+            const searchInput = document.getElementById('searchInput');
+            searchInput.value = '';
+            
+            const studentCards = document.querySelectorAll('.student-card');
+            studentCards.forEach(card => {
+                card.style.display = 'block';
+                card.style.animation = '';
+            });
+            
+            showNotification('Search cleared', 'info');
+        }
+        
+        // ===== DELETE FUNCTIONALITY =====
+        function deleteStudent(id, name) {
+            if (confirm(`Are you sure you want to delete "${name}"?\n\nThis action will remove the student from the list.`)) {
+                // Find and remove the student card
+                const studentCard = document.querySelector(`.student-card[data-name="${name}"]`);
+                if (studentCard) {
+                    studentCard.style.animation = 'fadeOut 0.3s';
+                    setTimeout(() => {
+                        studentCard.remove();
+                        updateStatistics();
+                        showNotification(`Student "${name}" deleted successfully`, 'success');
+                    }, 300);
+                }
+                
+                // Add fade out animation CSS
+                if (!document.getElementById('fadeOutStyle')) {
+                    const style = document.createElement('style');
+                    style.id = 'fadeOutStyle';
+                    style.textContent = `
+                        @keyframes fadeOut {
+                            0% { opacity: 1; transform: scale(1); }
+                            100% { opacity: 0; transform: scale(0.8); }
+                        }
+                    `;
+                    document.head.appendChild(style);
+                }
+            }
+        }
+        
+        // ===== STATISTICS FUNCTIONS =====
+        function updateStatistics() {
+            const studentCards = document.querySelectorAll('.student-card');
+            const totalCount = studentCards.length;
+            
+            // Count by grade
+            let grade12Count = 0;
+            let grade11Count = 0;
+            let grade10Count = 0;
+            let totalAge = 0;
+            
+            studentCards.forEach(card => {
+                const grade = card.getAttribute('data-grade');
+                const age = parseInt(card.getAttribute('data-age'));
+                
+                if (grade === '12th Grade') grade12Count++;
+                else if (grade === '11th Grade') grade11Count++;
+                else if (grade === '10th Grade') grade10Count++;
+                
+                totalAge += age;
+            });
+            
+            // Update UI
+            document.getElementById('totalCount').textContent = totalCount;
+            document.getElementById('grade12Count').textContent = grade12Count;
+            document.getElementById('footerStudentCount').textContent = totalCount;
+            
+            // Calculate average age
+            const avgAge = totalCount > 0 ? (totalAge / totalCount).toFixed(1) : '0.0';
+            document.getElementById('avgAge').textContent = avgAge;
+        }
+        
+        // ===== EXPORT FUNCTIONS =====
+        function exportToCSV() {
+            const studentCards = document.querySelectorAll('.student-card');
+            let csvContent = "data:text/csv;charset=utf-8,Name,Age,Grade,Email,Phone\n";
+            
+            studentCards.forEach(card => {
+                const name = card.getAttribute('data-name');
+                const age = card.getAttribute('data-age');
+                const grade = card.getAttribute('data-grade');
+                const email = card.getAttribute('data-email');
+                
+                // Extract phone from card content
+                const phoneElement = card.querySelector('.student-details p:nth-child(3)');
+                const phone = phoneElement ? phoneElement.textContent.replace(' ', '') : '';
+                
+                csvContent += `${name},${age},${grade},${email},${phone}\n`;
+            });
+            
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", "students.csv");
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            
+            showNotification('CSV file downloaded successfully', 'success');
+        }
+        
+        function refreshData() {
+            // In a real app, this would reload from server
+            // For demo, just update statistics
+            updateStatistics();
+            showNotification('Data refreshed', 'success');
+        }
+        
+        // ===== ANIMATIONS =====
+        function animateCards() {
+            const cards = document.querySelectorAll('.student-card, .stat-card');
+            
+            cards.forEach((card, index) => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, index * 100);
+            });
+        }
+        
+        // ===== NOTIFICATION SYSTEM =====
+        function showNotification(message, type = 'info') {
+            // Remove existing notifications
+            const existingNotifications = document.querySelectorAll('.custom-notification');
+            existingNotifications.forEach(notification => {
+                notification.remove();
+            });
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `custom-notification notification-${type}`;
+            notification.innerHTML = `
+                <span class="notification-icon">
+                    ${type === 'success' ? '✅' : 
+                      type === 'error' ? '❌' : 
+                      type === 'warning' ? '⚠️' : 'ℹ️'}
+                </span>
+                <span class="notification-text">${message}</span>
+                <button class="notification-close" onclick="this.parentElement.remove()">×</button>
+            `;
+            
+            // Add styles if not already added
+            if (!document.getElementById('notificationStyle')) {
+                const style = document.createElement('style');
+                style.id = 'notificationStyle';
+                style.textContent = `
+                    .custom-notification {
+                        position: fixed;
+                        top: 20px;
+                        right: 20px;
+                        padding: 15px 20px;
+                        border-radius: 8px;
+                        color: white;
+                        display: flex;
+                        align-items: center;
+                        gap: 10px;
+                        z-index: 1000;
+                        animation: slideIn 0.3s ease;
+                        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+                        max-width: 400px;
+                    }
+                    
+                    .notification-success { background: linear-gradient(135deg, #38a169, #2f855a); }
+                    .notification-error { background: linear-gradient(135deg, #e53e3e, #c53030); }
+                    .notification-warning { background: linear-gradient(135deg, #ed8936, #dd6b20); }
+                    .notification-info { background: linear-gradient(135deg, #4299e1, #3182ce); }
+                    
+                    .notification-close {
+                        background: none;
+                        border: none;
+                        color: white;
+                        font-size: 20px;
+                        cursor: pointer;
+                        margin-left: 10px;
+                    }
+                    
+                    @keyframes slideIn {
+                        from { transform: translateX(100%); opacity: 0; }
+                        to { transform: translateX(0); opacity: 1; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+            
+            document.body.appendChild(notification);
+            
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.style.animation = 'slideOut 0.3s ease';
+                    setTimeout(() => notification.remove(), 300);
+                }
+            }, 5000);
+        }
+        
+        // ===== EVENT LISTENERS =====
+        function initEventListeners() {
+            // Search on Enter key
+            const searchInput = document.getElementById('searchInput');
+            if (searchInput) {
+                searchInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        searchStudents();
+                    }
+                });
+            }
+            
+            // Keyboard shortcuts
+            document.addEventListener('keydown', function(e) {
+                // Ctrl/Cmd + F to focus search
+                if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+                    e.preventDefault();
+                    if (searchInput) {
+                        searchInput.focus();
+                    }
+                }
+                
+                // Ctrl/Cmd + N to add new student
+                if ((e.ctrlKey || e.metaKey) && e.key === 'n') {
+                    e.preventDefault();
+                    window.location.href = '/add';
+                }
+                
+                // Escape to clear search
+                if (e.key === 'Escape' && searchInput) {
+                    searchInput.value = '';
+                    clearSearch();
+                }
+            });
+        }
+        
+        // ===== HELPER FUNCTIONS =====
+        function getCurrentDate() {
+            const now = new Date();
+            return now.toLocaleDateString('en-US', {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+        }
+        
+        // Display current date in console
+        console.log(`Dashboard loaded on: ${getCurrentDate()}`);
+        
+    </script>
+</body>
+</html>
