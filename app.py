@@ -1,22 +1,15 @@
-# app.py - MODIFIED FOR GITHUB ROOT DIRECTORY
+# app.py - COMPLETE FLASK APPLICATION
 import os
 from flask import Flask, render_template, request, redirect, url_for, flash
-import sqlite3
-
-# Import database functions (they're in the same directory)
 from db_helper import get_db_connection, init_db, get_all_students, get_student_by_id, add_student, update_student, delete_student
 
-# Create folders if they don't exist (for local development)
-os.makedirs('templates', exist_ok=True)
-os.makedirs('static', exist_ok=True)
-
-# Tell Flask to look in current directory for templates and static files
+# Configure Flask for flexibility
 app = Flask(__name__, 
-            template_folder='.',      # Look in current directory for templates
-            static_folder='.',        # Look in current directory for static files
-            static_url_path='')       # Serve static files from root path
+            template_folder='templates' if os.path.exists('templates') else '.',
+            static_folder='static' if os.path.exists('static') else '.',
+            static_url_path='')
 
-app.secret_key = 'your-secret-key-here-change-this-in-production'
+app.secret_key = 'student-management-system-secret-key-2024'
 
 # Initialize database
 init_db()
@@ -87,7 +80,18 @@ def delete_student_route(student_id):
         flash('Error deleting student!', 'error')
     return redirect(url_for('index'))
 
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
+
+@app.errorhandler(500)
+def internal_error(e):
+    return render_template('500.html'), 500
+
 if __name__ == '__main__':
-    print("🚀 Starting Student Management System...")
-    print("🌐 Open your browser and go to: http://localhost:5000")
-    app.run(debug=True, port=5000)
+    print("=" * 60)
+    print("🚀 Student Management System Starting...")
+    print("🌐 Open: http://localhost:5000")
+    print("🛑 Press CTRL+C to stop")
+    print("=" * 60)
+    app.run(debug=True, host='0.0.0.0', port=5000)
