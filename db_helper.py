@@ -56,7 +56,7 @@ def init_db():
                 VALUES (?, ?, ?, ?, ?, ?)
             ''', sample_students)
             conn.commit()
-            print(f"✅ Added {len(sample_students)} sample students to database")
+            print(f" Added {len(sample_students)} sample students to database")
 
 def get_all_students():
     """Get all students from database"""
