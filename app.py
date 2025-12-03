@@ -1,10 +1,22 @@
-# app.py - COMPLETE FLASK APPLICATION
+# app.py - MODIFIED FOR GITHUB ROOT DIRECTORY
+import os
 from flask import Flask, render_template, request, redirect, url_for, flash
 import sqlite3
+
+# Import database functions (they're in the same directory)
 from db_helper import get_db_connection, init_db, get_all_students, get_student_by_id, add_student, update_student, delete_student
 
-app = Flask(__name__)
-app.secret_key = 'your-secret-key-here'  # Change this in production
+# Create folders if they don't exist (for local development)
+os.makedirs('templates', exist_ok=True)
+os.makedirs('static', exist_ok=True)
+
+# Tell Flask to look in current directory for templates and static files
+app = Flask(__name__, 
+            template_folder='.',      # Look in current directory for templates
+            static_folder='.',        # Look in current directory for static files
+            static_url_path='')       # Serve static files from root path
+
+app.secret_key = 'your-secret-key-here-change-this-in-production'
 
 # Initialize database
 init_db()
@@ -76,4 +88,6 @@ def delete_student_route(student_id):
     return redirect(url_for('index'))
 
 if __name__ == '__main__':
+    print("🚀 Starting Student Management System...")
+    print("🌐 Open your browser and go to: http://localhost:5000")
     app.run(debug=True, port=5000)
